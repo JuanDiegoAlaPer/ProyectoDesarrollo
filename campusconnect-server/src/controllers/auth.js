@@ -86,6 +86,7 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
+<<<<<<< HEAD
 const getRol = async (req, res) => {
   try {
     const { token } = req.body;
@@ -112,9 +113,14 @@ const getRol = async (req, res) => {
   }
 };
 
+=======
+>>>>>>> 9411a55e6881b74c8a26f023a0c3cc39d0540ab2
 module.exports = {
   register,
   login,
   refreshAccessToken,
+<<<<<<< HEAD
   getRol,
+=======
+>>>>>>> 9411a55e6881b74c8a26f023a0c3cc39d0540ab2
 };
