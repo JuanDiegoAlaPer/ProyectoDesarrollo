@@ -101,9 +101,6 @@ const getRol = async (req, res) => {
     }
     const userRole = userStorage.role;
 
-    console.log("role");
-    console.log(userRole);
-
     // Enviar la respuesta con el rol del usuario
     return res.status(200).send({ role: userRole });
   } catch (error) {

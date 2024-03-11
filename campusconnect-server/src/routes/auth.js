@@ -7,6 +7,6 @@ const api = express.Router();
 api.post("/register", AuthController.register);
 api.post("/login", AuthController.login);
 api.post("/refresh_access_token", AuthController.refreshAccessToken);
-api.get("/role", AuthController.getRol);
+api.post("/role", AuthController.getRol);
 
 module.exports = api;
