@@ -57,7 +57,6 @@ const login = async (req, res) => {
       throw new Error("Usuario no autorizado o no activo");
     }
     res.status(200).send({
-      userId: userStore._id,
       access: jwt.createAccessToken(userStore),
       refresh: jwt.createRefreshToken(userStore),
       role: userStore.role,
