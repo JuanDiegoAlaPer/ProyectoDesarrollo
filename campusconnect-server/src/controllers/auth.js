@@ -109,9 +109,33 @@ const getRol = async (req, res) => {
   }
 };
 
+const getId = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).send({ msg: "Token requerido" });
+    }
+    const { user_id } = jwt.decoded(token);
+
+    // Consultar el usuario en la base de datos
+    const userStorage = await User.findOne({ _id: user_id });
+    if (!userStorage) {
+      return res.status(404).send({ msg: "Usuario no encontrado" });
+    }
+    const userId = userStorage._id;
+
+    // Enviar la respuesta con el id del usuario
+    return res.status(200).send({ id: userId });
+  } catch (error) {
+    console.error("Error del servidor:", error);
+    return res.status(500).send({ msg: "Error del servidor" });
+  }
+};
+
 module.exports = {
   register,
   login,
   refreshAccessToken,
   getRol,
+  getId,
 };
