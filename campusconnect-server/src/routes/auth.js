@@ -8,5 +8,6 @@ api.post("/register", AuthController.register);
 api.post("/login", AuthController.login);
 api.post("/refresh_access_token", AuthController.refreshAccessToken);
 api.post("/role", AuthController.getRol);
+api.post("/id", AuthController.getId);
 
 module.exports = api;
