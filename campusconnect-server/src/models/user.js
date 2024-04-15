@@ -8,9 +8,11 @@ const UserSchema = mongoose.Schema({
     unique: true,
   },
   password: String,
+  phone: String,
   role: String,
   active: Boolean,
-  avatar: String
+  avatar: String,
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
 });
 
 module.exports = mongoose.model("User", UserSchema);

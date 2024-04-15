@@ -11,6 +11,15 @@ api.post(
   [middleware_authentication.ensureAuth],
   EventController.createEvent
 );
+api.post(
+  "/upload",
+  [middleware_authentication.ensureAuth],
+  EventController.getImage
+);
+api.get(
+  "/images/:imageName",
+  EventController.giveImage
+);
 api.patch(
   "/:id",
   [middleware_authentication.ensureAuth],

@@ -34,5 +34,15 @@ api.delete(
   [middleware_authentication.ensureAuth],
   UserController.deleteUser
 );
+api.post(
+  "/add/:id",
+  [middleware_authentication.ensureAuth, md_upload],
+  UserController.addEvent
+);
+api.delete(
+  "/user/:userId/event/:eventId",
+  [middleware_authentication.ensureAuth],
+  UserController.removeEvent
+);
 
 module.exports = api;

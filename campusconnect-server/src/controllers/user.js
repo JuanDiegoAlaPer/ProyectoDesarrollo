@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const mongoose = require("mongoose");
+const { ObjectId } = require('mongoose').Types;
 
 const getMe = async (req, res) => {
   try {
@@ -71,9 +73,6 @@ const updateUser = async (req, res) => {
     } else {
       delete userData.password;
     }
-
-    
-
     await User.findByIdAndUpdate({ _id: id }, userData);
 
     res.status(200).send({ msg: "Actualización correcta" });
@@ -92,6 +91,57 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const addEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { eventId } = req.body;
+    if (!ObjectId.isValid(eventId)) {
+      return res.status(400).send({ msg: "ID de evento no válido" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $push: { events: eventId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ msg: "Usuario no encontrado" });
+    }
+    res.status(200).send({ msg: "Evento agregado correctamente al usuario" });
+    
+  } catch (error) {
+    console.error("Error al agregar evento al usuario:", error);
+    res.status(500).send({ msg: "Error interno del servidor" });
+  }
+};
+
+const removeEvent = async (req, res) => {
+  try {
+    const { userId, eventId } = req.params;
+    
+    if (!ObjectId.isValid(eventId)) {
+      return res.status(400).send({ msg: "ID de evento no válido" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { events: eventId } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).send({ msg: "Usuario no encontrado" });
+    }
+    
+    res.status(200).send({ msg: "Evento eliminado correctamente del usuario" });
+    
+  } catch (error) {
+    console.error("Error al eliminar evento del usuario:", error);
+    res.status(500).send({ msg: "Error interno del servidor" });
+  }
+};
+
 
 module.exports = {
   getMe,
@@ -100,4 +150,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
+  addEvent,
+  removeEvent,
 };

@@ -1,5 +1,8 @@
 const bcrypt = require("bcryptjs");
 const Event = require("../models/event");
+const multiparty = require("multiparty");
+const fs = require("fs");
+const path = require("path");
 
 const getEvent = async (req, res) => {
   try {
@@ -63,10 +66,66 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const getImage = async (req, res) => {
+  const form = new multiparty.Form();
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error("Error al analizar formulario:", err);
+      return res.status(500).json({ msg: "Error del servidor" });
+    }
+
+    const imageFile = files.imageFile[0]; 
+    const tempPath = imageFile.path;
+    const originalFileName = imageFile.originalFilename;
+    const fileExtension = originalFileName.split(".").pop();
+    const currentTime = new Date().getTime();
+    const fileName = `${currentTime}_${originalFileName}`;
+
+    const uploadDir = "../../uploads/eventsImages";
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    const targetPath = path.join(__dirname, uploadDir, fileName);
+
+    fs.rename(tempPath, targetPath, async (err) => {
+      if (err) {
+        console.error("Error al mover archivo:", err);
+        return res.status(500).json({ msg: "Error del servidor" });
+      }
+
+      res.status(200).json({ msg: "Imagen subida correctamente", fileName });
+    });
+  });
+};
+
+const giveImage = async (req, res) => {
+  try {
+    const { imageName } = req.params; 
+
+    const imagePath = path.join(__dirname, "../../uploads/eventsImages", imageName);
+
+    if (!fs.existsSync(imagePath)) {
+      return res.status(404).json({ msg: "Imagen no encontrada" });
+    }
+
+    const image = fs.readFileSync(imagePath);
+
+    res.writeHead(200, { "Content-Type": "image/png" }); 
+    res.end(image, "binary");
+  } catch (error) {
+    console.error("Error al obtener imagen:", error);
+    res.status(500).json({ msg: "Error del servidor" });
+  }
+};
+
 module.exports = {
   getEvent,
   getEvents,
   createEvent,
   updateEvent,
   deleteEvent,
+  getImage,
+  giveImage,
 };
