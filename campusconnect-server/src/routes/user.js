@@ -44,5 +44,6 @@ api.delete(
   [middleware_authentication.ensureAuth],
   UserController.removeEvent
 );
+api.get("/registered/:eventId", [middleware_authentication.ensureAuth], UserController.getUsersByEventId);
 
 module.exports = api;

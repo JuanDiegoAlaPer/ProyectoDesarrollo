@@ -11,8 +11,10 @@ const UserSchema = mongoose.Schema({
   phone: String,
   role: String,
   active: Boolean,
-  avatar: String,
-  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
+  program: String,
+  faculty: String,
+  events: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }],
+  Qualified: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Event' }]
 });
 
 module.exports = mongoose.model("User", UserSchema);

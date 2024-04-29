@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const Event = require("../models/event");
 const mongoose = require("mongoose");
 const { ObjectId } = require('mongoose').Types;
 
@@ -99,6 +100,15 @@ const addEvent = async (req, res) => {
       return res.status(400).send({ msg: "ID de evento no válido" });
     }
 
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).send({ msg: "Usuario no encontrado" });
+    }
+
+    if (user.events.includes(eventId)) {
+      return res.status(400).send({ msg: "El evento ya está en la lista del usuario" });
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       id,
       { $push: { events: eventId } },
@@ -108,6 +118,17 @@ const addEvent = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).send({ msg: "Usuario no encontrado" });
     }
+
+    const event = await Event.findByIdAndUpdate(
+      eventId,
+      { $inc: { placesLeft: -1 } }, 
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).send({ msg: "Evento no encontrado" });
+    }
+
     res.status(200).send({ msg: "Evento agregado correctamente al usuario" });
     
   } catch (error) {
@@ -133,11 +154,38 @@ const removeEvent = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).send({ msg: "Usuario no encontrado" });
     }
+
+    const event = await Event.findByIdAndUpdate(
+      eventId,
+      { $inc: { placesLeft: 1 } },
+      { new: true }
+    );
+
+    if (!event) {
+      return res.status(404).send({ msg: "Evento no encontrado" });
+    }
     
     res.status(200).send({ msg: "Evento eliminado correctamente del usuario" });
     
   } catch (error) {
     console.error("Error al eliminar evento del usuario:", error);
+    res.status(500).send({ msg: "Error interno del servidor" });
+  }
+};
+
+const getUsersByEventId = async (req, res) => {
+  try {
+    const { eventId } = req.params;
+
+    if (!ObjectId.isValid(eventId)) {
+      return res.status(400).send({ msg: "ID de evento no válido" });
+    }
+
+    const users = await User.find({ events: eventId });
+
+    res.status(200).send(users);
+  } catch (error) {
+    console.error("Error al obtener usuarios por ID de evento:", error);
     res.status(500).send({ msg: "Error interno del servidor" });
   }
 };
@@ -152,4 +200,5 @@ module.exports = {
   deleteUser,
   addEvent,
   removeEvent,
+  getUsersByEventId,
 };

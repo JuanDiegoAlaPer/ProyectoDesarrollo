@@ -30,5 +30,10 @@ api.delete(
   [middleware_authentication.ensureAuth],
   EventController.deleteEvent
 );
+api.patch(
+  "/qualifyEvent/:id",
+  [middleware_authentication.ensureAuth],
+  EventController.qualifyEvent
+);
 
 module.exports = api;

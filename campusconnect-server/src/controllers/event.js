@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const Event = require("../models/event");
+const User = require("../models/user");
 const multiparty = require("multiparty");
 const fs = require("fs");
 const path = require("path");
@@ -31,7 +32,7 @@ const getEvents = async (req, res) => {
 const createEvent = async (req, res) => {
   try {
     const eventData = req.body;
-    const event = new Event({ ...eventData, active: true });
+    const event = new Event({ ...eventData, active: true, placesLeft: eventData.capacity });
 
     const eventStored = await event.save();
     res.status(201).json(eventStored);
@@ -47,7 +48,7 @@ const updateEvent = async (req, res) => {
     const eventData = req.body;
 
     await Event.findByIdAndUpdate(id, eventData);
-
+    
     res.status(200).json({ msg: "Evento actualizado correctamente" });
   } catch (error) {
     console.error("Error al actualizar evento:", error);
@@ -120,6 +121,38 @@ const giveImage = async (req, res) => {
   }
 };
 
+const qualifyEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating, userId } = req.body; 
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+      return res.status(404).json({ msg: "Evento no encontrado" });
+    }
+
+    event.ratings.push(rating);
+
+    await event.save();
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    user.Qualified.push(id);
+    await user.save();
+
+    res.status(200).json({ msg: "Calificación agregada correctamente", event });
+  } catch (error) {
+    console.error("Error al actualizar evento:", error);
+    res.status(400).json({ msg: "Error al agregar la calificación al evento" });
+  }
+};
+
+
 module.exports = {
   getEvent,
   getEvents,
@@ -128,4 +161,5 @@ module.exports = {
   deleteEvent,
   getImage,
   giveImage,
+  qualifyEvent,
 };
