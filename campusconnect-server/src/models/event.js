@@ -23,8 +23,12 @@ const EventSchema = mongoose.Schema({
     salud: Boolean,
     estudiosSociales: Boolean
   },
-  ratings: [Number],
   placesLeft: Number,
+  comments: [{
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    message: String,
+    rating: { type: Number, min: 1, max: 5 }
+  }]
 });
 
 module.exports = mongoose.model("Event", EventSchema);

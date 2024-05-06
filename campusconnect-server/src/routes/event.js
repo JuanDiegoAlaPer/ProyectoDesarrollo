@@ -35,5 +35,6 @@ api.patch(
   [middleware_authentication.ensureAuth],
   EventController.qualifyEvent
 );
+api.post("/postulate", EventController.postulateEvent);
 
 module.exports = api;
