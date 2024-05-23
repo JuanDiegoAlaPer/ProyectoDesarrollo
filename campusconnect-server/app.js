@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /* Evitar bloqueos en el navegador cuando estemos trabajando con el backend y el frontend a la vez */
 
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173/',
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
     credentials: true,
     optionSuccessStatus:200
 }));
