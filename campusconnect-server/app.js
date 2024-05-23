@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const { API_VERSION } = require("./constants");
+const dotenv = require('dotenv').config()
 const app = express();
 
 /* Cargar rutas */
@@ -16,13 +16,18 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 /* Evitar bloqueos en el navegador cuando estemos trabajando con el backend y el frontend a la vez */
-app.use(cors());
 
-console.log(`api/${API_VERSION}/`);
+app.use(cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173/',
+    credentials: true,
+    optionSuccessStatus:200
+}));
 
-app.use(`/api/${API_VERSION}/auth`, authRoutes);
-app.use(`/api/${API_VERSION}/users`, userRoutes);
-app.use(`/api/${API_VERSION}/events`, eventRoutes);
+console.log(`api/${process.env.API_VERSION}/`);
+
+app.use(`/api/${process.env.API_VERSION}/auth`, authRoutes);
+app.use(`/api/${process.env.API_VERSION}/users`, userRoutes);
+app.use(`/api/${process.env.API_VERSION}/events`, eventRoutes);
 // app.use(`/api/${API_VERSION}/auth`, departamentoMunicipioRoutes);
 // console.log(`/api/${API_VERSION}/datosabiertos`);
 
